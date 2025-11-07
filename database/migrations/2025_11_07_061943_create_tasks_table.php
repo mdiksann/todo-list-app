@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->onDelete('cascade'); 
 
             $table->string('title');
-            $table->text('description')->nullable();
+            $table->text('description')->nullable(); 
             $table->boolean('is_completed')->default(false);
             $table->enum('priority', ['Low', 'Medium', 'High'])->default('Medium'); 
             $table->timestamp('due_date')->nullable(); 
