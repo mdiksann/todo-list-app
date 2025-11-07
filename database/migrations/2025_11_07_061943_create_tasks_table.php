@@ -13,11 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-Schema::create('tasks', function (Blueprint $table) {
-            $table->id(); 
-            $table->string('title', 255); 
-            $table->text('description')->nullable(); 
-            $table->boolean('is_completed')->default(false); 
+        Schema::create('tasks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('category_id')->constrained()->onDelete('cascade'); 
+
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->boolean('is_completed')->default(false);
+            $table->enum('priority', ['Low', 'Medium', 'High'])->default('Medium'); 
+            $table->timestamp('due_date')->nullable(); 
             $table->timestamps();
         });
     }
