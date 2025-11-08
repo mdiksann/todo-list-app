@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use app\Models\Category;
 
 class Task extends Model
 {
@@ -19,4 +19,9 @@ class Task extends Model
     protected $casts = [
         'is_completed' => 'boolean',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
