@@ -17,11 +17,10 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::orderBy('created_at', 'desc')->get();
-
         return response()->json([
             'message' => 'Daftar semua task berhasil diambil.',
             'data' => $tasks
-        ], Response::HTTP_OK); 
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -35,8 +34,11 @@ class TaskController extends Controller
         // validate input
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string', 
-            'is_completed' => 'sometimes|boolean', 
+            'description' => 'nullable|string',
+            'is_completed' => 'sometimes|boolean',
+            'category_id' => 'required|exists:categories,id',
+            'priority' => 'required|in:Low,Medium,High',
+            'due_date' => 'nullable|date',
         ]);
 
         try {
@@ -45,14 +47,14 @@ class TaskController extends Controller
 
             return response()->json([
                 'message' => 'Task berhasil dibuat.',
+                'category_id' => $request->category_id,
                 'data' => $task
-            ], Response::HTTP_CREATED); 
-
+            ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal membuat task.',
                 'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR); 
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -69,13 +71,13 @@ class TaskController extends Controller
         if (!$task) {
             return response()->json([
                 'message' => 'Task tidak ditemukan.'
-            ], Response::HTTP_NOT_FOUND); 
+            ], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json([
             'message' => 'Detail task berhasil diambil.',
             'data' => $task
-        ], Response::HTTP_OK); 
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -90,7 +92,7 @@ class TaskController extends Controller
         // Validate input
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string', 
+            'description' => 'nullable|string',
             'is_completed' => 'sometimes|boolean',
         ]);
 
@@ -100,7 +102,7 @@ class TaskController extends Controller
         if (!$task) {
             return response()->json([
                 'message' => 'Task tidak ditemukan.'
-            ], Response::HTTP_NOT_FOUND); 
+            ], Response::HTTP_NOT_FOUND);
         }
 
         try {
@@ -109,13 +111,12 @@ class TaskController extends Controller
             return response()->json([
                 'message' => 'Task berhasil diperbarui.',
                 'data' => $task
-            ], Response::HTTP_OK); 
-
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal memperbarui task.',
                 'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR); 
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -132,19 +133,18 @@ class TaskController extends Controller
         if (!$task) {
             return response()->json([
                 'message' => 'Task tidak ditemukan.'
-            ], Response::HTTP_NOT_FOUND); 
+            ], Response::HTTP_NOT_FOUND);
         }
         try {
             $task->delete();
             return response()->json([
                 'message' => 'Task berhasil dihapus.'
-            ], Response::HTTP_NO_CONTENT); 
-
+            ], Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menghapus task.',
                 'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR); 
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
