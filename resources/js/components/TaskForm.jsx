@@ -32,11 +32,13 @@ const TaskForm = ({ onTaskAdded, categories }) => {
         try {
             const response = await axios.post(`${API_URL}/tasks`, newTask);
             
-            onTaskAdded(response.data); 
+            onTaskAdded(response.data.data); 
 
             setTitle('');
             setDescription('');
             setDueDate('');
+
+            document.getElementById("taskForm").classList.add("hidden");
 
 
         } catch (error) {
