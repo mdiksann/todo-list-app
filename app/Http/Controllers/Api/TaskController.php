@@ -16,11 +16,22 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::orderBy('created_at', 'desc')->get();
-        return response()->json([
-            'message' => 'Daftar semua task berhasil diambil.',
-            'data' => $tasks
-        ], Response::HTTP_OK);
+        try {
+            $tasks = Task::with('category')->orderBy('created_at', 'desc')->get();
+
+            return response()->json([
+                'message' => 'Daftar semua task berhasil diambil.',
+                'data' => $tasks
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            // Log the exception and return a structured JSON error so the frontend can handle it gracefully
+            logger()->error('Error fetching tasks: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Gagal memuat tugas.',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -44,10 +55,10 @@ class TaskController extends Controller
         try {
             // create task
             $task = Task::create($validated);
+            $task->load('category');
 
             return response()->json([
                 'message' => 'Task berhasil dibuat.',
-                'category_id' => $request->category_id,
                 'data' => $task
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
@@ -94,6 +105,9 @@ class TaskController extends Controller
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
             'is_completed' => 'sometimes|boolean',
+            'category_id' => 'sometimes|required|exists:categories,id',
+            'priority' => 'sometimes|required|in:Low,Medium,High',
+            'due_date' => 'nullable|date',
         ]);
 
         // Search for the task
@@ -108,6 +122,8 @@ class TaskController extends Controller
         try {
             // Update task
             $task->update($validated);
+            $task->load('category');
+
             return response()->json([
                 'message' => 'Task berhasil diperbarui.',
                 'data' => $task
@@ -139,7 +155,7 @@ class TaskController extends Controller
             $task->delete();
             return response()->json([
                 'message' => 'Task berhasil dihapus.'
-            ], Response::HTTP_NO_CONTENT);
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menghapus task.',
