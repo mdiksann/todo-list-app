@@ -12,6 +12,49 @@ function App() {
     const [error, setError] = useState(null);
     const [activeView, setActiveView] = useState("today"); // 'today', 'calendar', 'upcoming'
 
+    // Fungsi untuk mengubah status penyelesaian tugas
+    const handleToggleComplete = async (taskToUpdate) => {
+        try {
+            const newStatus = !taskToUpdate.is_completed;
+            const response = await axios.put(
+                `${API_URL}/tasks/${taskToUpdate.id}`,
+                {
+                    is_completed: newStatus,
+                }
+            );
+
+            const updatedTask = response.data.data;
+
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    // Ganti task lama dengan task baru
+                    task.id === updatedTask.id ? updatedTask : task
+                )
+            );
+        } catch (error) {
+            console.error("Gagal mengubah status tugas:", error.response.data);
+        }
+    };
+
+    //Delete Task
+    const handleDeleteTask = async (taskId) => {
+        if (!confirm("Apakah Anda yakin ingin menghapus tugas ini?")) {
+            return;
+        }
+
+        try {
+            await axios.delete(`${API_URL}/tasks/${taskId}`);
+
+            // Hapus tugas dari state lokal
+            setTasks((prevTasks) =>
+                prevTasks.filter((task) => task.id !== taskId)
+            );
+        } catch (error) {
+            console.error("Gagal menghapus tugas:", error.response.data);
+            alert("Gagal menghapus tugas.");
+        }
+    };
+
     // 1. Fungsi untuk mengambil data TUGAS
     const fetchTasks = async () => {
         try {
@@ -261,13 +304,13 @@ function App() {
                                         key={task.id}
                                         className={`p-4 rounded-lg shadow-sm bg-white border-l-4 ${
                                             task.is_completed
-                                                ? "border-green-500"
+                                                ? "border-green-500 line-through"
                                                 : "border-yellow-500"
                                         }`}
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex-1">
-                                                <h3 className="font-medium text-gray-800">
+                                                <h3 className="font-medium text-gray-800 ${task.is_completed ? 'line-through text-gray-500' : ''}">
                                                     {task.title}
                                                 </h3>
                                                 <div className="flex items-center mt-1 space-x-4">
@@ -302,10 +345,24 @@ function App() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2">
-                                                <button className="text-gray-400 hover:text-green-500 text-xl">
+                                                <button
+                                                onClick={() => handleToggleComplete(task)} // <-- Tambahkan handler
+                                                className={`text-gray-400 hover:text-green-500 text-xl ${
+                                                    task.is_completed ? 'text-green-500' : ''
+                                                }`}
+                                                title={task.is_completed ? 'Tandai Belum Selesai' : 'Tandai Selesai'}
+                                            >
                                                     ✓
                                                 </button>
-                                                <button className="text-gray-400 hover:text-red-500 text-xl">
+                                                <button
+                                                    onClick={() =>
+                                                        handleDeleteTask(
+                                                            task.id
+                                                        )
+                                                    }
+                                                    className="text-gray-400 hover:text-red-500 text-xl"
+                                                    title="Hapus Tugas"
+                                                >
                                                     ×
                                                 </button>
                                             </div>
