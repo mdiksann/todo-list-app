@@ -135,7 +135,20 @@ const TaskCalendar = ({ tasks }) => {
                                 {day.day}
                             </span>
 
-                            {tasksOnDay.map((task) => (
+                            {tasksOnDay.map((task) => {
+                            let taskClass = '';
+                                if (task.is_completed) {
+                                    taskClass = "bg-green-200 text-green-800 line-through";
+                                } else if (task.priority === 'High') {
+                                    taskClass = "bg-red-500 text-white font-bold";
+                                } else if (task.priority === 'Medium') {
+                                    taskClass = "bg-orange-400 text-white";
+                                } else {
+                                    taskClass = "bg-green-400 text-white";
+                            }
+                
+                            
+                            return (
                                 <div
                                     key={task.id}
                                     className={`mt-1 text-xs px-1 py-0.5 rounded-sm truncate ${
@@ -147,7 +160,8 @@ const TaskCalendar = ({ tasks }) => {
                                 >
                                     {task.title}
                                 </div>
-                            ))}
+                            );
+                            })}
                         </div>
                     );
                 })}
