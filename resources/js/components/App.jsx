@@ -149,7 +149,17 @@ function App() {
                                         : ""
                                 }`}
                             >
-                                <span className="mr-2">#</span>
+                                <svg
+                                    className="w-4 h-4 mr-2"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                </svg>
                                 <span>Upcoming</span>
                                 <span className="ml-auto text-gray-500">
                                     {
@@ -168,7 +178,17 @@ function App() {
                                     activeView === "today" ? "bg-gray-100" : ""
                                 }`}
                             >
-                                <span className="mr-2">#</span>
+                                <svg
+                                    className="w-4 h-4 mr-2"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
                                 <span>Today</span>
                                 <span className="ml-auto text-gray-500">
                                     {
@@ -194,7 +214,17 @@ function App() {
                                         : ""
                                 }`}
                             >
-                                <span className="mr-2">#</span>
+                                <svg
+                                    className="w-4 h-4 mr-2"
+                                    fill="none"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
                                 <span>Calendar</span>
                             </li>
                         </ul>
@@ -346,13 +376,29 @@ function App() {
                                             </div>
                                             <div className="flex items-center space-x-2">
                                                 <button
-                                                onClick={() => handleToggleComplete(task)} // <-- Tambahkan handler
-                                                className={`text-gray-400 hover:text-green-500 text-xl ${
-                                                    task.is_completed ? 'text-green-500' : ''
-                                                }`}
-                                                title={task.is_completed ? 'Tandai Belum Selesai' : 'Tandai Selesai'}
-                                            >
-                                                    ✓
+                                                    onClick={() =>
+                                                        handleToggleComplete(
+                                                            task
+                                                        )
+                                                    }
+                                                    className="w-8 h-8 rounded-lg border-2 bg-green-500 border-green-600 hover:bg-green-600 flex items-center justify-center transition-colors"
+                                                    title={
+                                                        task.is_completed
+                                                            ? "Tandai Belum Selesai"
+                                                            : "Tandai Selesai"
+                                                    }
+                                                >
+                                                    <svg
+                                                        className="w-5 h-5 text-white"
+                                                        fill="none"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="3"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path d="M5 13l4 4L19 7"></path>
+                                                    </svg>
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -360,10 +406,20 @@ function App() {
                                                             task.id
                                                         )
                                                     }
-                                                    className="text-gray-400 hover:text-red-500 text-xl"
+                                                    className="w-8 h-8 rounded-lg bg-red-500 border-2 border-red-600 hover:bg-red-600 flex items-center justify-center transition-colors"
                                                     title="Hapus Tugas"
                                                 >
-                                                    ×
+                                                    <svg
+                                                        className="w-5 h-5 text-white"
+                                                        fill="none"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="3"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
                                                 </button>
                                             </div>
                                         </div>
