@@ -10,7 +10,9 @@ function App() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeView, setActiveView] = useState("today"); // 'today', 'calendar', 'upcoming'
+    const [activeView, setActiveView] = useState("today"); // 'today', 'calendar', 'upcoming', 'category'
+    const [editingTask, setEditingTask] = useState(null); // Task yang sedang diedit
+    const [selectedCategory, setSelectedCategory] = useState(null); // Kategori yang dipilih
 
     // Fungsi untuk mengubah status penyelesaian tugas
     const handleToggleComplete = async (taskToUpdate) => {
@@ -34,6 +36,22 @@ function App() {
         } catch (error) {
             console.error("Gagal mengubah status tugas:", error.response.data);
         }
+    };
+
+    // Edit Task
+    const handleEditTask = (task) => {
+        setEditingTask(task);
+        document.getElementById("taskForm").classList.remove("hidden");
+    };
+
+    // Update Task
+    const handleUpdateTask = (updatedTask) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+            )
+        );
+        setEditingTask(null);
     };
 
     //Delete Task
@@ -101,6 +119,12 @@ function App() {
         setTasks((prevTasks) => [...prevTasks, newTask]);
     };
 
+    // Handler untuk klik kategori
+    const handleCategoryClick = (category) => {
+        setSelectedCategory(category);
+        setActiveView("category");
+    };
+
     if (loading)
         return (
             <div className="container mx-auto p-4">
@@ -166,6 +190,7 @@ function App() {
                                         tasks.filter(
                                             (task) =>
                                                 task.due_date &&
+                                                !task.is_completed &&
                                                 new Date(task.due_date) >
                                                     new Date()
                                         ).length
@@ -193,7 +218,11 @@ function App() {
                                 <span className="ml-auto text-gray-500">
                                     {
                                         tasks.filter((task) => {
-                                            if (!task.due_date) return false;
+                                            if (
+                                                !task.due_date ||
+                                                task.is_completed
+                                            )
+                                                return false;
                                             const today = new Date();
                                             const dueDate = new Date(
                                                 task.due_date
@@ -238,7 +267,15 @@ function App() {
                             {categories.map((category) => (
                                 <li
                                     key={category.id}
-                                    className="flex items-center text-gray-700 hover:bg-gray-100 px-2 py-1 rounded"
+                                    onClick={() =>
+                                        handleCategoryClick(category)
+                                    }
+                                    className={`flex items-center text-gray-700 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer ${
+                                        activeView === "category" &&
+                                        selectedCategory?.id === category.id
+                                            ? "bg-gray-100"
+                                            : ""
+                                    }`}
                                 >
                                     <span className="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
                                     <span>{category.name}</span>
@@ -267,6 +304,8 @@ function App() {
                             ? "Calendar View"
                             : activeView === "upcoming"
                             ? "Upcoming Tasks"
+                            : activeView === "category" && selectedCategory
+                            ? selectedCategory.name
                             : "Today's Tasks"}
                     </h1>
                     <button
@@ -285,7 +324,10 @@ function App() {
                 <div id="taskForm" className="hidden mb-6">
                     <TaskForm
                         onTaskAdded={handleTaskAdded}
+                        onTaskUpdated={handleUpdateTask}
                         categories={categories}
+                        editingTask={editingTask}
+                        onCancelEdit={() => setEditingTask(null)}
                     />
                 </div>
 
@@ -296,7 +338,8 @@ function App() {
                     <div className="space-y-4">
                         {tasks.filter((task) => {
                             if (activeView === "today") {
-                                if (!task.due_date) return false;
+                                if (!task.due_date || task.is_completed)
+                                    return false;
                                 const today = new Date();
                                 const dueDate = new Date(task.due_date);
                                 return (
@@ -305,15 +348,23 @@ function App() {
                                 );
                             }
                             if (activeView === "upcoming") {
-                                if (!task.due_date) return false;
+                                if (!task.due_date || task.is_completed)
+                                    return false;
                                 return new Date(task.due_date) > new Date();
+                            }
+                            if (activeView === "category" && selectedCategory) {
+                                return (
+                                    task.category &&
+                                    task.category.id === selectedCategory.id
+                                );
                             }
                             return true;
                         }).length > 0 ? (
                             tasks
                                 .filter((task) => {
                                     if (activeView === "today") {
-                                        if (!task.due_date) return false;
+                                        if (!task.due_date || task.is_completed)
+                                            return false;
                                         const today = new Date();
                                         const dueDate = new Date(task.due_date);
                                         return (
@@ -322,9 +373,20 @@ function App() {
                                         );
                                     }
                                     if (activeView === "upcoming") {
-                                        if (!task.due_date) return false;
+                                        if (!task.due_date || task.is_completed)
+                                            return false;
                                         return (
                                             new Date(task.due_date) > new Date()
+                                        );
+                                    }
+                                    if (
+                                        activeView === "category" &&
+                                        selectedCategory
+                                    ) {
+                                        return (
+                                            task.category &&
+                                            task.category.id ===
+                                                selectedCategory.id
                                         );
                                     }
                                     return true;
@@ -375,52 +437,82 @@ function App() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2">
-                                                <button
-                                                    onClick={() =>
-                                                        handleToggleComplete(
-                                                            task
-                                                        )
-                                                    }
-                                                    className="w-8 h-8 rounded-lg border-2 bg-green-500 border-green-600 hover:bg-green-600 flex items-center justify-center transition-colors"
-                                                    title={
-                                                        task.is_completed
-                                                            ? "Tandai Belum Selesai"
-                                                            : "Tandai Selesai"
-                                                    }
-                                                >
-                                                    <svg
-                                                        className="w-5 h-5 text-white"
-                                                        fill="none"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="3"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path d="M5 13l4 4L19 7"></path>
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDeleteTask(
-                                                            task.id
-                                                        )
-                                                    }
-                                                    className="w-8 h-8 rounded-lg bg-red-500 border-2 border-red-600 hover:bg-red-600 flex items-center justify-center transition-colors"
-                                                    title="Hapus Tugas"
-                                                >
-                                                    <svg
-                                                        className="w-5 h-5 text-white"
-                                                        fill="none"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="3"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path d="M6 18L18 6M6 6l12 12"></path>
-                                                    </svg>
-                                                </button>
+                                                {activeView === "category" &&
+                                                task.is_completed ? (
+                                                    <span className="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">
+                                                        Completed
+                                                    </span>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleEditTask(
+                                                                    task
+                                                                )
+                                                            }
+                                                            className="w-8 h-8 rounded-lg bg-blue-500 border-2 border-blue-600 hover:bg-blue-600 flex items-center justify-center transition-colors"
+                                                            title="Edit Tugas"
+                                                        >
+                                                            <svg
+                                                                className="w-5 h-5 text-white"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="2"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleToggleComplete(
+                                                                    task
+                                                                )
+                                                            }
+                                                            className="w-8 h-8 rounded-lg border-2 bg-green-500 border-green-600 hover:bg-green-600 flex items-center justify-center transition-colors"
+                                                            title={
+                                                                task.is_completed
+                                                                    ? "Tandai Belum Selesai"
+                                                                    : "Tandai Selesai"
+                                                            }
+                                                        >
+                                                            <svg
+                                                                className="w-5 h-5 text-white"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="3"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path d="M5 13l4 4L19 7"></path>
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleDeleteTask(
+                                                                    task.id
+                                                                )
+                                                            }
+                                                            className="w-8 h-8 rounded-lg bg-red-500 border-2 border-red-600 hover:bg-red-600 flex items-center justify-center transition-colors"
+                                                            title="Hapus Tugas"
+                                                        >
+                                                            <svg
+                                                                className="w-5 h-5 text-white"
+                                                                fill="none"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="3"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path d="M6 18L18 6M6 6l12 12"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -428,7 +520,12 @@ function App() {
                         ) : (
                             <div className="text-center p-8 bg-white rounded-lg shadow-sm">
                                 <p className="text-gray-500">
-                                    Belum ada tugas untuk hari ini
+                                    {activeView === "category" &&
+                                    selectedCategory
+                                        ? `Belum ada tugas di kategori ${selectedCategory.name}`
+                                        : activeView === "upcoming"
+                                        ? "Belum ada tugas yang akan datang"
+                                        : "Belum ada tugas untuk hari ini"}
                                 </p>
                             </div>
                         )}
