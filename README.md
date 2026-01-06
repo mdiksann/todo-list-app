@@ -1,66 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Todo List Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen tugas (Todo List) yang dibangun menggunakan Laravel 9 untuk backend dan React untuk frontend. Aplikasi ini memungkinkan pengguna untuk mengelola tugas dengan fitur kategori, prioritas, dan tanggal jatuh tempo.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   **Manajemen Tugas**: Buat, edit, hapus, dan tandai tugas sebagai selesai
+-   **Kategori**: Organisasi tugas berdasarkan kategori dengan kode warna
+-   **Prioritas**: Tetapkan tingkat prioritas (Low, Medium, High) untuk setiap tugas
+-   **Tanggal Jatuh Tempo**: Atur deadline untuk tugas-tugas penting
+-   **RESTful API**: API endpoint yang terstruktur dengan baik
+-   **Frontend React**: Antarmuka pengguna yang modern dan interaktif
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Teknologi yang Digunakan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Backend
 
-## Learning Laravel
+-   **Laravel 9.x** - Framework PHP
+-   **PHP 8.0+** - Bahasa pemrograman
+-   **MySQL/PostgreSQL** - Database
+-   **Laravel Sanctum** - API authentication
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Frontend
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   **React 18.2** - Library JavaScript untuk UI
+-   **Vite** - Build tool dan dev server
+-   **Tailwind CSS** - CSS framework
+-   **Axios** - HTTP client
+-   **React Big Calendar** - Komponen kalender
+-   **Moment.js** - Manipulasi tanggal dan waktu
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Persyaratan Sistem
 
-## Laravel Sponsors
+-   PHP >= 8.0.2
+-   Composer
+-   Node.js & NPM
+-   MySQL/PostgreSQL
+-   Web server (Apache/Nginx)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Instalasi
 
-### Premium Partners
+### 1. Clone Repository
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+git clone <repository-url>
+cd todo-list
+```
 
-## Contributing
+### 2. Install Dependencies Backend
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+```
 
-## Code of Conduct
+### 3. Konfigurasi Environment
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+Edit file `.env` dan sesuaikan konfigurasi database:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=todo_list
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## License
+### 4. Migrasi Database & Seeding
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+### 5. Install Dependencies Frontend
+
+```bash
+npm install
+```
+
+### 6. Menjalankan Aplikasi
+
+Jalankan Laravel development server:
+
+```bash
+php artisan serve
+```
+
+Di terminal terpisah, jalankan Vite dev server:
+
+```bash
+npm run dev
+```
+
+Aplikasi akan berjalan di `http://localhost:8000`
+
+## Struktur Database
+
+### Tabel Categories
+
+-   `id` - Primary key
+-   `name` - Nama kategori
+-   `color_code` - Kode warna untuk kategori
+-   `timestamps` - Created at & Updated at
+
+### Tabel Tasks
+
+-   `id` - Primary key
+-   `category_id` - Foreign key ke tabel categories
+-   `title` - Judul tugas
+-   `description` - Deskripsi tugas (nullable)
+-   `is_completed` - Status penyelesaian (boolean)
+-   `priority` - Tingkat prioritas (Low, Medium, High)
+-   `due_date` - Tanggal jatuh tempo (nullable)
+-   `timestamps` - Created at & Updated at
+
+## API Endpoints
+
+### Tasks
+
+-   `GET /api/tasks` - Mendapatkan semua tugas
+-   `POST /api/tasks` - Membuat tugas baru
+-   `GET /api/tasks/{id}` - Mendapatkan detail tugas
+-   `PUT/PATCH /api/tasks/{id}` - Update tugas
+-   `DELETE /api/tasks/{id}` - Hapus tugas
+
+### Categories
+
+-   `GET /api/categories` - Mendapatkan semua kategori
+-   `POST /api/categories` - Membuat kategori baru
+-   `GET /api/categories/{id}` - Mendapatkan detail kategori
+-   `PUT/PATCH /api/categories/{id}` - Update kategori
+-   `DELETE /api/categories/{id}` - Hapus kategori
+-   `GET /api/categories/{id}/tasks` - Mendapatkan semua tugas dalam kategori
+
+## Build untuk Production
+
+### Build Frontend
+
+```bash
+npm run build
+```
+
+### Optimasi Laravel
+
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+
+
+## Lisensi
+
+Project ini dibuat untuk keperluan pembelajaran dan pengembangan. Silakan digunakan sesuai kebutuhan.
+
+## Kontribusi
+
+Kontribusi selalu diterima. Silakan buat pull request atau laporkan issue jika menemukan bug atau memiliki saran fitur baru.
