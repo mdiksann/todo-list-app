@@ -14,17 +14,20 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $tasks = Task::with('category')->orderBy('created_at', 'desc')->get();
+            $user = $request->user();
+            $tasks = Task::with('category')
+                ->where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             return response()->json([
                 'message' => 'Daftar semua task berhasil diambil.',
                 'data' => $tasks
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            // Log the exception and return a structured JSON error so the frontend can handle it gracefully
             logger()->error('Error fetching tasks: ' . $e->getMessage());
 
             return response()->json([
@@ -54,6 +57,8 @@ class TaskController extends Controller
 
         try {
             // create task
+            $user = $request->user();
+            $validated['user_id'] = $user->id;
             $task = Task::create($validated);
             $task->load('category');
 
